@@ -13,8 +13,9 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
 
-    # 아이콘 설정
-    _ico = Path(__file__).parent / "0w0.ico"
+    # 아이콘 설정 (맥: .icns, 윈도우/리눅스: .ico)
+    _base = Path(__file__).parent
+    _ico = _base / ("0w0.icns" if sys.platform == "darwin" else "0w0.ico")
     if _ico.exists():
         app.setWindowIcon(QIcon(str(_ico)))
 

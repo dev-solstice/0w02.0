@@ -934,8 +934,12 @@ class _LaunchCard(QFrame):
         path = self.data.get("cs_launch_path", "")
         if path and os.path.exists(path):
             import subprocess
+            import sys
             try:
-                subprocess.Popen([path])
+                if sys.platform == "darwin":
+                    subprocess.Popen(["open", path])
+                else:
+                    subprocess.Popen([path])
             except Exception as e:
                 from PySide6.QtWidgets import QMessageBox
                 QMessageBox.warning(self, t("오류"), str(e))
@@ -943,10 +947,17 @@ class _LaunchCard(QFrame):
             self._pick_path()
 
     def _pick_path(self) -> None:
+        import sys
         from PySide6.QtWidgets import QFileDialog
+        if sys.platform == "darwin":
+            file_filter = "Applications (*.app);;All Files (*)"
+            start_dir = "/Applications"
+        else:
+            file_filter = "Executable (*.exe);;All Files (*)"
+            start_dir = ""
         path, _ = QFileDialog.getOpenFileName(
-            self, t("프로그램 실행 파일 선택"), "",
-            "Executable (*.exe);;All Files (*)"
+            self, t("프로그램 실행 파일 선택"), start_dir,
+            file_filter
         )
         if path:
             self.data["cs_launch_path"] = path
